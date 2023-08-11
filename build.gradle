@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0-rc-1'
+}
+
+group = 'ru.classbase'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from(components.java)
+
+            pom {
+                packaging = 'jar'
+                name = 'Common annotations'
+                description = 'General purpose annotations'
+                url = 'https://github.com/pzaharoff/common-annotation'
+
+                licenses {
+                    license {
+                        name = 'The 2-Clause BSD License'
+                        url = 'https://opensource.org/license/bsd-2-clause/'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "Diagnost"
+                        name = "Pavel Zakharov"
+                        email = "pzaharoff@gmail.com"
+                    }
+                }
+                scm {
+                    connection = "scm:https://github.com/pzaharoff/common-annotation.git"
+                    developerConnection = "scm:git@github.com:pzaharoff/common-annotation.git"
+                    url = "https://github.com/pzaharoff/common-annotation"
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            username = project.properties["sonatypeUsername"]
+            password = project.properties["sonatypePassword"]
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+dependencies {
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
